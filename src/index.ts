@@ -1,7 +1,7 @@
 import { JsonRpcProvider, id } from 'ethers'
 
 const provider = new JsonRpcProvider(
-  'https://eth-mainnet.g.alchemy.com/v2/OIoR91FXtiqdHtEnysgoYQGXlv'
+  'https://eth-mainnet.g.alchemy.com/v2/api-key'
 )
 
 async function pollBlock(blockNumber: number) {
@@ -11,4 +11,7 @@ async function pollBlock(blockNumber: number) {
     toBlock: blockNumber,
     topics: [id('Transfer(address,address,uint256)')]
   })
+  console.log(logs)
 }
+
+pollBlock(20820485)
