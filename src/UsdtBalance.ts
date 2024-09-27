@@ -21,3 +21,38 @@ async function getUSDTBalance() {
     console.error('Error fetching balance:', error)
   }
 }
+
+async function pollUSDTTransfers(fromBlock: number, toBlock: number) {
+  try {
+    const logs = await provider.getLogs({
+      address: USDT_CONTRACT,
+      fromBlock,
+      toBlock,
+      topics: [id('Transfer(address,address,uint256)')]
+    })
+
+    let balanceChange = toBigInt(0)
+
+    logs.forEach(log => {
+      const parsedLog = usdtContract.interface.parseLog(log)
+      const from = parsedLog?.args[0]
+      const to = parsedLog?.args[1]
+      const value = parsedLog?.args[2]
+
+      if (from.toLowerCase() === ADDRESS_TO_TRACK.toLowerCase()) {
+        balanceChange -= BigInt(value)
+      }
+      if (to.toLowerCase() === ADDRESS_TO_TRACK.toLowerCase()) {
+        balanceChange += BigInt(value)
+      }
+    })
+    console.log(
+      `Balance Change from block ${fromBlock} to ${toBlock}: ${formatUnits(
+        balanceChange,
+        6
+      )} USDT`
+    )
+  } catch (error) {
+    console.error('Error polling transfers:', error)
+  }
+}
