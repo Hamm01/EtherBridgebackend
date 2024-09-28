@@ -56,3 +56,16 @@ async function pollUSDTTransfers(fromBlock: number, toBlock: number) {
     console.error('Error polling transfers:', error)
   }
 }
+// the above function i written for checking the actual balance change for last 1000 blocks for the
+// address we want to track.
+async function main() {
+  const latestBlock = await provider.getBlockNumber()
+  console.log(`Latest block: ${latestBlock}`)
+  await getUSDTBalance()
+
+  // Polling the  last 1000 blocks for USDT transfers
+  const startBlock = latestBlock - 1000 > 0 ? latestBlock - 1000 : 0
+  await pollUSDTTransfers(startBlock, latestBlock)
+}
+
+main().catch(console.error)
